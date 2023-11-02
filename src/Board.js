@@ -63,10 +63,15 @@ function Board({ nrows = 3, ncols = 3, chanceLightStartsOn = .5 }) {
       };
 
       // TODO: Make a (deep) copy of the oldBoard
+      let copy = JSON.parse(JSON.stringify(oldBoard));
+      console.log('COPY', copy);
 
       // TODO: in the copy, flip this cell and the cells around it
+      flipCell(y, x, copy);
 
       // TODO: return the copy
+      return copy;
+
     });
   }
 
