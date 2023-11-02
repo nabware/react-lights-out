@@ -46,14 +46,25 @@ function Board({ nrows = 3, ncols = 3, chanceLightStartsOn = .5 }) {
     return initialBoard;
   }
 
+  /** Returns true/false if all lights are out. */
   function hasWon() {
-    // TODO: check the board in state to determine whether the player has won.
+    return board.flat().every(c => c === false);
   }
+
+  /**
+   * Takes string coord 'y-x',
+   * flips cell and surrounding cells, and
+   * sets board state.
+   * */
 
   function flipCellsAround(coord) {
     setBoard(oldBoard => {
       const [y, x] = coord.split("-").map(Number);
 
+      /**
+       * Takes y and x coord numbers and board copy matrix array,
+       * and flips cell if found.
+       */
       const flipCell = (y, x, boardCopy) => {
         // if this coord is actually on board, flip it
 
@@ -62,22 +73,24 @@ function Board({ nrows = 3, ncols = 3, chanceLightStartsOn = .5 }) {
         }
       };
 
-      // TODO: Make a (deep) copy of the oldBoard
-      let copy = JSON.parse(JSON.stringify(oldBoard));
-      console.log('COPY', copy);
+      const boardCopy = JSON.parse(JSON.stringify(oldBoard));
+      // alternative: map and spread each row [...row]
 
-      // TODO: in the copy, flip this cell and the cells around it
-      flipCell(y, x, copy);
+      flipCell(y, x, boardCopy);
+      flipCell(y, x - 1, boardCopy);
+      flipCell(y, x + 1, boardCopy);
+      flipCell(y - 1, x, boardCopy);
+      flipCell(y + 1, x, boardCopy);
 
-      // TODO: return the copy
-      return copy;
-
+      return boardCopy;
     });
   }
 
   // if the game is won, just show a winning msg & render nothing else
 
-  // TODO
+  if (hasWon()) {
+    return <h1>You Won!</h1>;
+  }
 
   // make table board
 
@@ -85,13 +98,13 @@ function Board({ nrows = 3, ncols = 3, chanceLightStartsOn = .5 }) {
     <table>
       <tbody>
         {board.map(
-          (r, y) => <tr>{
+          (r, y) => <tr key={y}>{
             r.map(
               (c, x) => <Cell
                 key={`${y}-${x}`}
-                coord={`${y}-${x}`}
+                coords={`${y}-${x}`}
                 isLit={c}
-                flipCellsAroundMe={flipCellsAround}
+                flipCellsAroundMe={() => flipCellsAround(coords)}
               />
             )}
           </tr>
